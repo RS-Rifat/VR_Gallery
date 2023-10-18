@@ -26,6 +26,7 @@ public class Looc360Cursor : MonoBehaviour
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class Looc360Cursor : MonoBehaviour
@@ -55,6 +56,9 @@ public class Looc360Cursor : MonoBehaviour
     {
         rotationY += Input.GetAxis("Mouse X") * sensitivity;
         rotationX += Input.GetAxis("Mouse Y") * -1 * sensitivity;
+
+        rotationX = Mathf.Clamp(rotationX, -90f, 90f);
+
         transform.localEulerAngles = new Vector3(rotationX, rotationY, 0);
 
         // Check if camera should move
@@ -77,4 +81,20 @@ public class Looc360Cursor : MonoBehaviour
         targetPosition = originalCameraPosition;
         isMoving = true;
     }
+
+
+    #region WebGL in on Mobile check
+
+    [DllImport(dllName: "__Internal")]
+    private static extern bool IsMobile();
+
+    public bool isMobile()
+    {
+#if !UNITY_EDITOR && UNITY_WEBGL
+        return IsMobile();
+#endif
+
+        return false;
+    }
+    #endregion
 }
